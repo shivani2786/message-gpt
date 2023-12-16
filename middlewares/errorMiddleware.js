@@ -1,0 +1,25 @@
+const errorResponse=require("../utilis/errorResponse");
+
+const errorHandler=(err,req,res,next)=>{
+    let error={...err}
+    error.message=err.message
+    //mongoose error
+    if(err.name==='castError'){
+        const message='Resources Not Found'
+    }
+    //duplicate
+    if(err.code===11000){
+        const message='Duplicate field value entered'
+        error=new errorResponse(message,400)
+    }
+    //mongoose valodation
+    if(err.name==='validationError'){
+        const message=object.values(err.errors).map(val=>val.message)
+        error=new errorResponse(message,400)
+        res.status(error.statusCode || 500).json({
+            success:false,
+            error: error.message||'Server Error'
+        })
+    }
+};
+module.exports=errorHandler;
